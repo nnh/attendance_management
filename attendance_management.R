@@ -1,4 +1,4 @@
-#target_yyyymm <- "201907"
+#target_yyyymm <- "201906"
 library(here)
 library(stringr)
 library(dplyr)
