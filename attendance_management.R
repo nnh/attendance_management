@@ -1,10 +1,18 @@
+# attendance_management
+# Mariko Ohtsuka
+# 2019/9/12
 #target_yyyymm <- "201906"
 library(here)
 library(stringr)
 library(dplyr)
 library(hms)
 ReadCsvFunc <- function(input_csv){
-  return(read.csv(input_csv, skip=3, fileEncoding="cp932", stringsAsFactors=F, na.strings = "NA"))
+  temp <- read.csv(input_csv, skip=3, fileEncoding="cp932", stringsAsFactors=F, na.strings = "NA")
+  if (colnames(temp)[1] == "日時") {
+    return(temp)
+  } else {
+    return(NULL)
+  }
 }
 GroupbyName <- function(input_df){
   output_df <- data.frame(名前=input_df["name"],
@@ -29,21 +37,28 @@ input_yyyymm <- str_c(input_path, "/", yyyymm)
 output_path <- input_yyyymm
 file_list <- list.files(input_yyyymm, full.names=T)
 df_attendance <- NULL
-for (i in 1:length(file_list)){
-  df_attendance <- ReadCsvFunc(file_list[i]) %>% rename(name=名前) %>% bind_rows(df_attendance, .)
-}
+local({
+  for (i in 1:length(file_list)){
+    temp <- ReadCsvFunc(file_list[i])
+    if (!is.null(temp)){
+      df_attendance <<- temp %>% rename(name=名前) %>% bind_rows(df_attendance, .)
+    }
+  }
+})
 df_attendance <- df_attendance %>% filter(name != "")
 df_attendance$ymd <- as.Date(format(as.Date(df_attendance$日時), "%Y-%m-%d"))
 df_attendance$time <- format(as.POSIXct(df_attendance$日時), "%H:%M:%S")
 df_output <- NULL
-name_list <- df_attendance %>% filter(name != "") %>% distinct(name, .keep_all=F) %>% arrange(name)
+name_list <- df_attendance %>% distinct(name, .keep_all=F) %>% arrange(name)
 # group by name
-for (i in 1:nrow(name_list)){
-  temp <- df_attendance %>% filter(name == name_list[i, 1]) %>% arrange(ymd)
-  temp_max <- temp %>% group_by(ymd) %>% filter(time==max(time)) %>% select(name, ymd, clockout=time)
-  temp_min <- temp %>% group_by(ymd) %>% filter(time==min(time)) %>% select(name, ymd, clockin=time)
-  temp_min_max <- full_join(temp_min, temp_max, by=c("name", "ymd"))
-  # group by date
-  df_output <- apply(temp_min_max, 1, GroupbyName) %>% c(df_output, .)
-}
+local({
+  for (i in 1:nrow(name_list)){
+    temp <- df_attendance %>% filter(name == name_list[i, 1]) %>% arrange(ymd)
+    temp_max <- temp %>% group_by(ymd) %>% filter(time==max(time)) %>% select(name, ymd, clockout=time)
+    temp_min <- temp %>% group_by(ymd) %>% filter(time==min(time)) %>% select(name, ymd, clockin=time)
+    temp_min_max <- full_join(temp_min, temp_max, by=c("name", "ymd"))
+    # group by date
+    df_output <<- apply(temp_min_max, 1, GroupbyName) %>% c(df_output, .)
+  }
+})
 write.csv(do.call(rbind, df_output), str_c(output_path, "/", yyyymm, ".csv"), row.names=F, fileEncoding="cp932")
