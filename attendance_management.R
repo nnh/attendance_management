@@ -34,7 +34,8 @@ if (exists("target_yyyymm")){
   yyyymm <- str_c(format(last_month, "%Y"), format(last_month, "%m"))
 }
 input_yyyymm <- str_c(input_path, "/", yyyymm)
-output_path <- input_yyyymm
+#output_path <- input_yyyymm
+output_path <- str_c(input_path, "/output")
 file_list <- list.files(input_yyyymm, full.names=T)
 df_attendance <- NULL
 local({
