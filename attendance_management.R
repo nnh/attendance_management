@@ -1,6 +1,6 @@
 # attendance_management
 # Mariko Ohtsuka
-# 2019/9/12
+# 2019/10/1
 #target_yyyymm <- "201906"
 library(here)
 library(stringr)
@@ -59,6 +59,8 @@ local({
     temp_min_max <- full_join(temp_min, temp_max, by=c("name", "ymd"))
     # group by date
     df_output <<- apply(temp_min_max, 1, GroupbyName) %>% c(df_output, .)
+    df_output_by_name <- apply(temp_min_max, 1, GroupbyName)
+    write.csv(do.call(rbind, df_output_by_name), str_c(output_path, "/", name_list[i, 1], ".csv"), row.names=F, fileEncoding="cp932")
   }
 })
 write.csv(do.call(rbind, df_output), str_c(output_path, "/", yyyymm, ".csv"), row.names=F, fileEncoding="cp932")
