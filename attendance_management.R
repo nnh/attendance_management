@@ -72,7 +72,6 @@ df_attendance <- NULL
 # create a date list
 local({
   days <- GetMonthLastDate(yyyymm) %>% seq(1, ., 1) %>% formatC(width=2, flag="0")
-#  ymd <- as.Date(str_c(str_sub(yyyymm, 1, 4), str_sub(yyyymm, 5, 7), days, sep="-"))
   ymd <- str_c(str_sub(yyyymm, 1, 4), str_sub(yyyymm, 5, 7), days, sep="-")
   df_calender <<- data.frame(ymd, stringsAsFactors=F)
 })
@@ -84,7 +83,7 @@ local({
     }
   }
 })
-df_attendance <- df_attendance %>% filter(name != "")
+df_attendance <- df_attendance %>% filter(name != "") %>% filter(状況 != "ﾃﾞｰﾀ設定成功(利用者情報)" & 状況 != "通行ﾚﾍﾞﾙｴﾗｰ")
 df_attendance$ymd <- as.Date(format(as.Date(df_attendance$日時), "%Y-%m-%d"))
 df_attendance$time <- format(as.POSIXct(df_attendance$日時), "%H:%M:%S")
 df_output_by_name_all <- NULL
