@@ -31,8 +31,6 @@ GroupbyName <- function(input_df){
                           年月日=input_df["ymd"],
                           入室=input_df["clockin"],
                           退室=input_df["clockout"],
-                          入室_r=input_df["roundup_time"],
-                          退室_r=input_df["rounddown_time"],
                           stringsAsFactors=F)
   output_df$差分 <- difftime(strptime(input_df["clockout"], "%H:%M:%S"), strptime(input_df["clockin"], "%H:%M:%S"),
                                   units="secs") %>% as.numeric %>% as_hms
@@ -90,6 +88,7 @@ df_attendance$time <- format(as.POSIXct(df_attendance$日時), "%H:%M:%S")
 df_attendance$roundup_time <- format(align.time(as.POSIXct(df_attendance$日時), 5*60), "%H:%M:%S")
 df_attendance$rounddown_time <- format(align.time(as.POSIXct(df_attendance$日時) - 5*60, 5*60), "%H:%M:%S")
 df_output <- NULL
+df_output_by_name_all <- NULL
 name_list <- df_attendance %>% distinct(name, .keep_all=F) %>% arrange(name)
 # group by name
 local({
@@ -101,14 +100,11 @@ local({
     # group by date
     df_output <<- apply(temp_min_max, 1, GroupbyName) %>% c(df_output, .)
     df_output_by_name <- apply(temp_min_max, 1, GroupbyName)
+    write.csv(do.call(rbind, df_output_by_name), str_c(output_path, "/", name_list[i, 1], ".csv"), row.names=F, fileEncoding="cp932")
     # output other than work days
     temp_output_by_name <- do.call(rbind, df_output_by_name)
     temp_output_by_name$ymd <- as.Date(temp_output_by_name$年月日)
     df_output_by_name_alldays <- left_join(df_calender, temp_output_by_name, by="ymd")
-    df_output_by_name_alldays_adjustment <- df_output_by_name_alldays %>% select(入室_r, 退室_r)
-    write.table(df_output_by_name_alldays_adjustment, str_c(output_path, "/", name_list[i, 1], ".csv"), row.names=F,
-                fileEncoding="cp932", col.names=F, na="", sep="\t")
-    write.csv(do.call(rbind, df_output_by_name_alldays), str_c(output_path, "/", name_list[i, 1], ".csv"), row.names=F, fileEncoding="cp932")
   }
 })
 write.csv(do.call(rbind, df_output), str_c(output_path, "/", yyyymm, ".csv"), row.names=F, fileEncoding="cp932")
