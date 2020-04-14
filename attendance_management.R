@@ -1,10 +1,9 @@
 # attendance_management
 # Mariko Ohtsuka
-# 2020/02/05
+# 2020/04/14
 # ------ set date if necessary ------
 #target_yyyymm <- "201906"
 # ------ libraries ------
-library(here)
 library(stringr)
 library(dplyr)
 library(hms)
@@ -12,8 +11,8 @@ library(xts)
 # ------ functions ------
 #' ReadCsvFunc
 #' @param input_csv
-#' @return
-#' @example
+#' @return If the first column name is "日時", return CSV data, otherwise return NULL
+#' @example temp <- ReadCsvFunc(file_list[i])
 ReadCsvFunc <- function(input_csv){
   temp <- read.csv(input_csv, skip=3, fileEncoding="cp932", stringsAsFactors=F, na.strings = "NA")
   if (colnames(temp)[1] == "日時") {
@@ -25,7 +24,7 @@ ReadCsvFunc <- function(input_csv){
 #' GroupbyName
 #' @param input_df A dataframe.
 #' @return A data frame with a column for the difference between the start time and end time
-#' @example
+#' @example GroupbyName(input_df)
 GroupbyName <- function(input_df){
   output_df <- data.frame(名前=input_df["name"],
                           ymd=input_df["ymd"],
@@ -39,7 +38,7 @@ GroupbyName <- function(input_df){
 #' GetMonthLastDate
 #' @param yyyymm A character
 #' @return Last day of month of param
-#' @example
+#' @example GetMonthLastDate(yyyymm)
 GetMonthLastDate <- function(yyyymm){
   yyyy <- str_sub(yyyymm, 1, 4)
   mm <- str_sub(yyyymm, 5, 7)
@@ -53,9 +52,16 @@ GetMonthLastDate <- function(yyyymm){
   return(format(next_month - 1, "%d"))
 }
 # ------ main ------
-here() %>% setwd()
-setwd("..")
-input_path <- str_c(getwd(), "/ログデータ")
+os <- .Platform$OS.type  # mac or windows
+parent_path <- ""
+if (os == "unix"){
+  volume_str <- "/Volumes"
+} else{
+  volume_str <- "//aronas"
+}
+input_parent_path <- "/Datacenter/IT/SystemAssistant/月例・随時作業関連/入退室ログ/ログデータ/"
+output_parent_path <- "/Datacenter/IT/Attendance Management/"
+input_path <- str_c(volume_str, input_parent_path)
 if (exists("target_yyyymm")){
   yyyymm <- target_yyyymm
 } else{
@@ -63,7 +69,7 @@ if (exists("target_yyyymm")){
   yyyymm <- Sys.Date() %>% format("%Y-%m-01") %>% as.Date() %>% {. - 1} %>% format("%Y%m")
 }
 input_yyyymm <- str_c(input_path, "/", yyyymm)
-output_path <- str_c(input_yyyymm, "/output")
+output_path <- str_c(volume_str, output_parent_path, yyyymm)
 if (file.exists(output_path) == F) {
   dir.create(output_path)
 }
