@@ -1,10 +1,11 @@
 # attendance_management
-使用方法は[wiki](https://github.com/nnh/attendance_management/wiki)に記載しました。  
+入退室ログから出勤・退勤時間を出力します。  
+使用方法はSEアシスタントマニュアル（月次）に記載しました。  
   
 初回のみ、実行前に下記の3パッケージのインストールが必要です。  
 R Studio右下の「Packages」からインストールしてください。  
 - tidyverse
-- here
+- xts
 - hms  
   
 ![am_package_install_1](https://user-images.githubusercontent.com/24307469/64836427-cee82d80-d624-11e9-9730-380660c90ce2.png)  
