@@ -1,6 +1,6 @@
 # attendance_management
 # Mariko Ohtsuka
-# 2020/07/31
+# 2020/08/03
 # ------ set date if necessary ------
 #target_yyyymm <- "201906"
 # ------ libraries ------
@@ -91,7 +91,7 @@ local({
 })
 df_attendance <- df_attendance %>% filter(name != "") %>% filter(状況 != "ﾃﾞｰﾀ設定成功(利用者情報)" & 状況 != "通行ﾚﾍﾞﾙｴﾗｰ")
 df_attendance$ymd <- as.Date(format(as.Date(df_attendance$日時), "%Y-%m-%d"))
-df_attendance$time <- format(as.POSIXct(df_attendance$日時), "%H:%M")
+df_attendance$time <- format(as.POSIXct(df_attendance$日時), "%H:%M:00")
 df_output_by_name_all <- NULL
 name_list <- df_attendance %>% distinct(name, .keep_all=F) %>% arrange(name)
 # group by name
