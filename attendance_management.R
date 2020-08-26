@@ -1,11 +1,10 @@
 # attendance_management
 # Mariko Ohtsuka
-# 2020/08/03
+# 2020/08/26
 # ------ set date if necessary ------
 #target_yyyymm <- "201906"
 # ------ libraries ------
-library(stringr)
-library(dplyr)
+library(tidyverse)
 library(hms)
 library(xts)
 # ------ functions ------
@@ -20,20 +19,6 @@ ReadCsvFunc <- function(input_csv){
   } else {
     return(NULL)
   }
-}
-#' GroupbyName
-#' @param input_df A dataframe.
-#' @return A data frame with a column for the difference between the start time and end time
-#' @example GroupbyName(input_df)
-GroupbyName <- function(input_df){
-  output_df <- data.frame(名前=input_df["name"],
-                          ymd=input_df["ymd"],
-                          入室=input_df["clockin"],
-                          退室=input_df["clockout"],
-                          stringsAsFactors=F)
-  output_df$差分 <- difftime(strptime(input_df["clockout"], "%H:%M:%S"), strptime(input_df["clockin"], "%H:%M:%S"),
-                                  units="secs") %>% as.numeric %>% as_hms
-  return(output_df)
 }
 #' GetMonthLastDate
 #' @param yyyymm A character
@@ -78,38 +63,30 @@ df_attendance <- NULL
 # create a date list
 local({
   days <- GetMonthLastDate(yyyymm) %>% seq(1, ., 1) %>% formatC(width=2, flag="0")
-  ymd <- str_c(str_sub(yyyymm, 1, 4), str_sub(yyyymm, 5, 7), days, sep="-")
+  ymd <- str_c(str_sub(yyyymm, 1, 4), str_sub(yyyymm, 5, 7), days, sep="-") %>% as.Date()
   df_calender <<- data.frame(ymd, stringsAsFactors=F)
 })
-local({
-  for (i in 1:length(file_list)){
-    temp <- ReadCsvFunc(file_list[i])
-    if (!is.null(temp)){
-      df_attendance <<- temp %>% rename(name=名前) %>% bind_rows(df_attendance, .)
-    }
-  }
-})
-df_attendance <- df_attendance %>% filter(name != "") %>% filter(状況 != "ﾃﾞｰﾀ設定成功(利用者情報)" & 状況 != "通行ﾚﾍﾞﾙｴﾗｰ")
-df_attendance$ymd <- as.Date(format(as.Date(df_attendance$日時), "%Y-%m-%d"))
+df_attendance <- map(file_list, ReadCsvFunc) %>%
+                  bind_rows(df_attendance, .) %>%
+                    rename(name=名前) %>%
+                      filter(name != "") %>%
+                        filter(状況 != "ﾃﾞｰﾀ設定成功(利用者情報)" & 状況 != "通行ﾚﾍﾞﾙｴﾗｰ")
+df_attendance$ymd <- as.Date(df_attendance$日時)
 df_attendance$time <- format(as.POSIXct(df_attendance$日時), "%H:%M:00")
-df_output_by_name_all <- NULL
 name_list <- df_attendance %>% distinct(name, .keep_all=F) %>% arrange(name)
 # group by name
-local({
-  for (i in 1:nrow(name_list)){
-    temp <- df_attendance %>% filter(name == name_list[i, 1]) %>% arrange(ymd)
-    temp_max <- temp %>% group_by(ymd) %>% filter(time==max(time)) %>% select(name, ymd, clockout=time)
-    temp_min <- temp %>% group_by(ymd) %>% filter(time==min(time)) %>% select(name, ymd, clockin=time)
-    temp_min_max <- full_join(temp_min, temp_max, by=c("name", "ymd"))
-    # group by date
-    df_output_by_name <- apply(temp_min_max, 1, GroupbyName) %>% do.call(rbind, .) %>%
-                            right_join(df_calender, by="ymd") %>% select(c("入室", "退室"))
-    # Remove numbers and spaces from file names
-    output_file_name <- str_replace_all(name_list[i, 1], pattern="[0-9|\\s|　]", "")
-    if (output_file_name == ""){
-      output_file_name <- name_list[i, 1]
-    }
-    write.table(df_output_by_name, str_c(output_path, "/", output_file_name, ".txt"), sep="\t", na="",
-              row.names=F, col.names=F, fileEncoding="cp932")
+df_output_by_name <- map(name_list[[1]], function(target_name){
+  temp <- df_attendance %>% filter(name == target_name) %>% group_by(ymd)
+  temp_max <- temp %>% filter(time==max(time)) %>% select(name, ymd, clockout=time) %>% distinct(clockout, .keep_all=T)
+  temp_min <- temp %>% filter(time==min(time)) %>% select(name, ymd, clockin=time) %>% distinct(clockin, .keep_all=T)
+  output_df <- full_join(temp_min, temp_max, by=c("name", "ymd")) %>% right_join(df_calender, by="ymd") %>%
+                    arrange(ymd) %>% ungroup() %>% select(clockin, clockout)
+  # Remove numbers and spaces from file names
+  output_file_name <- str_replace_all(target_name, pattern="[0-9|\\s|　]", "")
+  if (output_file_name == ""){
+    output_file_name <- target_name
   }
+  write.table(output_df, str_c(output_path, "/", output_file_name, ".txt"), sep="\t", na="",
+              row.names=F, col.names=F, fileEncoding="cp932")
+  return(output_df)
 })
