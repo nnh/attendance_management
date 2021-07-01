@@ -10,6 +10,7 @@ R Studio右下の「Packages」からインストールしてください。
 - tidyverse
 - xts
 - hms  
+- here  
   
 ![am_package_install_1](https://user-images.githubusercontent.com/24307469/64836427-cee82d80-d624-11e9-9730-380660c90ce2.png)  
   
