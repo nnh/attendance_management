@@ -1,12 +1,13 @@
 # attendance_management
 # Mariko Ohtsuka
-# 2020/08/26
+# 2021/07/01
 # ------ set date if necessary ------
 #target_yyyymm <- "201906"
 # ------ libraries ------
 library(tidyverse)
 library(hms)
 library(xts)
+library(here)
 # ------ functions ------
 #' ReadCsvFunc
 #' @param input_csv
@@ -44,8 +45,8 @@ if (os == "unix"){
 } else{
   volume_str <- "//aronas"
 }
-input_parent_path <- "/Datacenter/IT/SystemAssistant/月例・随時作業関連/入退室ログ/ログデータ/"
-output_parent_path <- "/Datacenter/IT/Attendance Management/"
+input_parent_path <- "/Archives/Log/DC入退室/rawdata/"
+output_parent_path <- here("output")
 input_path <- str_c(volume_str, input_parent_path)
 if (exists("target_yyyymm")){
   yyyymm <- target_yyyymm
@@ -54,7 +55,7 @@ if (exists("target_yyyymm")){
   yyyymm <- Sys.Date() %>% format("%Y-%m-01") %>% as.Date() %>% {. - 1} %>% format("%Y%m")
 }
 input_yyyymm <- str_c(input_path, "/", yyyymm)
-output_path <- str_c(volume_str, output_parent_path, yyyymm)
+output_path <- str_c(output_parent_path, "/", yyyymm)
 if (file.exists(output_path) == F) {
   dir.create(output_path)
 }
