@@ -16,4 +16,8 @@ R Studio右下の「Packages」からインストールしてください。
   
 ![am_package_install_2](https://user-images.githubusercontent.com/24307469/64836478-00f98f80-d625-11e9-9080-d5d59af1023d.png)  
 ### 使用方法
-使用方法はSEアシスタントマニュアル（月次）に記載しました。
+1. R Studioを起動し、メニューのFile > New projectを選択してください。  
+1. Existing Directoryを選択し、Project working directoryに先ほど保存した「attendance_management-master」フォルダを指定してCreate Projectをクリックしてください。
+1. R StudioのメニューのFile > Open Fileを選択し、「attendance_management.R」を開いてください。  
+1. 画面上部中央にある「Source」をクリックすると処理が実行されます。画面左下のコンソールに「>」だけの行が表示されたら処理完了です。
+1. \Attendance Management\output\YYYYMM\（YYYYMMは対象の年月）に、個人別のテキストファイルが作成されていることを確認してください。  
