@@ -3,7 +3,7 @@
 入退室ログから出勤・退勤時間を出力します。  
 ## ファイルのダウンロード
 Zipファイルをダウンロードします。  
-![スクリーンショット 2021-08-02 12 36 37](https://user-images.githubusercontent.com/24307469/127803084-601cfb53-7373-44f2-a211-5857bf86bbf5.png). 
+![スクリーンショット 2021-08-02 12 36 37](https://user-images.githubusercontent.com/24307469/127803084-601cfb53-7373-44f2-a211-5857bf86bbf5.png).  
 ダウンロードしたファイルを右クリックして「すべて展開」します。  
 「attendance_management-master」フォルダを開くと、同じ名前の「attendance_management-master」フォルダがありますので、それをドキュメントフォルダなどにコピーしてください。    
 フォルダ構成が下の図のようになればOKです。  
