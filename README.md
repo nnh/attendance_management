@@ -10,8 +10,8 @@ Zipファイルをダウンロードします。
 ![スクリーンショット 2021-08-02 13 02 34](https://user-images.githubusercontent.com/24307469/127803112-9c8313af-a67c-4379-a473-19d79ff02e83.png)
   
 ## 事前準備
-初回のみ、Rtoolsのインストールが必要です。
-Using Rtools4 on Windows. 
+初回のみ、Rtoolsのインストールが必要です。  
+Using Rtools4 on Windows.  
 https://cran.r-project.org/bin/windows/Rtools/   
 初回のみ、実行前に下記の5パッケージのインストールが必要です。  
 R Studio右下の「Packages」からインストールしてください。  
