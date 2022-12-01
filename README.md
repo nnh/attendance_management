@@ -29,4 +29,5 @@ R Studio右下の「Packages」からインストールしてください。
 1. Existing Directoryを選択し、Project working directoryに先ほど保存した「attendance_management-master」フォルダを指定してCreate Projectをクリックしてください。
 1. R StudioのメニューのFile > Open Fileを選択し、「attendance_management.R」を開いてください。  
 1. 画面上部中央にある「Source」をクリックすると処理が実行されます。画面左下のコンソールに「>」だけの行が表示されたら処理完了です。
-1. 所定の場所のYYYYMMフォルダ（YYYYMMは対象の年月）に、個人別のテキストファイルが作成されていることを確認してください。  
+1. 所定の場所のYYYYMMフォルダ（YYYYMMは対象の年月）に、個人別のテキストファイルが作成されていることを確認してください。
+1. うまく動かない場合、inputパスであるaronasへのアクセスができるか確認してください。  
