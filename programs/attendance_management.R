@@ -1,10 +1,12 @@
 # attendance_management
 # Mariko Ohtsuka
-# 2021/12/03
+# 2024/2/1
 # ------ set date if necessary ------
 #target_yyyymm <- "201906"
 # ------ libraries ------
 library(here)
+options(conflictRules = list('dplyr' = list(exclude = 'lag')))
+options(xts.warn_dplyr_breaks_lag = FALSE)
 source(here('programs', 'common.R'), encoding='utf-8')
 # ------ main ------
 os <- GetOsType()  # mac or windows
