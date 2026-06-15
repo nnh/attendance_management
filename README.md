@@ -1,33 +1,65 @@
 # attendance_management
+
 ## 概要
-入退室ログから出勤・退勤時間を出力します。  
+
+入退室ログCSVから個人別の出勤・退勤時刻テキストファイルを生成します。
+
+## フォルダ構成
+
+```
+attendance_management/
+├── programs/
+│   ├── attendance_management.R        # メインスクリプト
+│   └── common.R                       # 共通関数
+├── tests/
+│   └── test_attendance_management.R   # テストスクリプト
+├── input/
+│   └── test_YYYYMM/                   # テスト用ダミー入力CSV
+└── output/
+    └── test_YYYYMM/                   # テスト用期待値ファイル
+```
+
 ## ファイルのダウンロード
-Zipファイルをダウンロードします。  
-![スクリーンショット 2021-08-02 12 36 37](https://user-images.githubusercontent.com/24307469/127803084-601cfb53-7373-44f2-a211-5857bf86bbf5.png).  
+
+GitHub のページから ZIP ファイルをダウンロードします。  
 ダウンロードしたファイルを右クリックして「すべて展開」します。  
-「attendance_management-master」フォルダを開くと、同じ名前の「attendance_management-master」フォルダがありますので、それをドキュメントフォルダなどにコピーしてください。    
-フォルダ構成が下の図のようになればOKです。  
-![スクリーンショット 2021-08-02 13 02 34](https://user-images.githubusercontent.com/24307469/127803112-9c8313af-a67c-4379-a473-19d79ff02e83.png)
-  
-## 事前準備
-初回のみ、Rtoolsのインストールが必要です。  
-Using Rtools4 on Windows.  
-https://cran.r-project.org/bin/windows/Rtools/   
-初回のみ、実行前に下記の5パッケージのインストールが必要です。  
-R Studio右下の「Packages」からインストールしてください。  
+「attendance_management-master」フォルダを開くと、同じ名前の「attendance_management-master」フォルダがありますので、それをドキュメントフォルダなどにコピーしてください。
+
+## 事前準備（初回のみ）
+
+以下のパッケージをインストールしてください。  
+RStudio 右下の「Packages」タブ →「Install」から実行できます。
+
 - tidyverse
-- xts
-- hms  
-- here  
-- broom
-  
-![am_package_install_1](https://user-images.githubusercontent.com/24307469/64836427-cee82d80-d624-11e9-9730-380660c90ce2.png)  
-  
-![am_package_install_2](https://user-images.githubusercontent.com/24307469/64836478-00f98f80-d625-11e9-9080-d5d59af1023d.png)  
-### 使用方法
-1. R Studioを起動し、メニューのFile > New projectを選択してください。  
-1. Existing Directoryを選択し、Project working directoryに先ほど保存した「attendance_management-master」フォルダを指定してCreate Projectをクリックしてください。
-1. R StudioのメニューのFile > Open Fileを選択し、「attendance_management.R」を開いてください。  
-1. 画面上部中央にある「Source」をクリックすると処理が実行されます。画面左下のコンソールに「>」だけの行が表示されたら処理完了です。
-1. 所定の場所のYYYYMMフォルダ（YYYYMMは対象の年月）に、個人別のテキストファイルが作成されていることを確認してください。
-1. うまく動かない場合、inputパスであるaronasへのアクセスができるか確認してください。  
+- lubridate
+- here
+
+## 使い方
+
+### 通常実行
+
+1. RStudio を起動し、メニューの File > New Project を選択してください。
+2. Existing Directory を選択し、Project working directory に「attendance_management-master」フォルダを指定して、Create Project をクリックしてください。
+3. RStudio のメニューの File > Open File を選択し、`programs/attendance_management.R` を開いてください。
+4. 画面上部の「Source」をクリックすると処理が実行されます。画面左下のコンソールに `>` のみの行が表示されたら処理完了です。
+5. Box の所定フォルダに `YYYYMM/` フォルダが作成され、個人別テキストファイルが格納されます。
+
+> **特定の年月を対象にしたい場合**  
+> `attendance_management.R` の先頭にある下記の行のコメントを外して年月を指定してください。
+>
+> ```r
+> # target_yyyymm <- "202401"
+> ```
+
+### トラブルシューティング
+
+- **ファイルが生成されない** → `//aronas` へのネットワーク接続を確認してください
+- **エラーが出る** → パッケージが正しくインストールされているか確認してください
+- **パッケージインストール時にコンパイルエラーが出る** → Rtools をインストールしてください（Windows のみ）  
+  https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html
+
+## テスト
+
+### 実行方法
+
+`tests/test_attendance_management.R` を Source すると、実行日の前月（YYYYMM）を自動で対象とし、実データを使って `programs/attendance_management.R` を実行し、`output/test_YYYYMM/` の期待値と比較して PASS/FAIL を表示します。
