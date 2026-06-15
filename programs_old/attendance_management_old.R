@@ -1,6 +1,6 @@
 # attendance_management
 # Mariko Ohtsuka
-# 2024/2/1
+# 2026/6/15
 # ------ set date if necessary ------
 #target_yyyymm <- "201906"
 # ------ libraries ------
@@ -18,12 +18,13 @@ if (os == "unix"){
   volume_str <- "//aronas"
   move_path <- '~/Box/Datacenter/ISR/"Attendance Management/"'
 }
-input_parent_path <- "/Archives/Log/DC入退室/rawdata/"
+#input_parent_path <- "/Archives/Log/DC入退室/rawdata/"
 output_parent_path <- here("output")
-input_path <- str_c(volume_str, input_parent_path)
+#input_path <- str_c(volume_str, input_parent_path)
+input_path <- here("input")
 yyyymm <- GetYyyymm()
-input_yyyymm <- str_c(input_path, "/", yyyymm)
-output_path <- str_c(output_parent_path, "/", yyyymm)
+input_yyyymm <- str_c(input_path, "/test_", yyyymm)
+output_path <- str_c(output_parent_path, "/test_", yyyymm)
 if (file.exists(output_path) == F) {
   dir.create(output_path)
 }
@@ -59,4 +60,4 @@ df_output_by_name <- map(name_list[[1]], function(target_name){
               row.names=F, col.names=F, fileEncoding="cp932")
   return(output_df)
 })
-MoveFile('-n', here('output'), move_path, str_c(yyyymm, '/'))
+#MoveFile('-n', here('output'), move_path, str_c(yyyymm, '/'))

@@ -1,21 +1,24 @@
 # test_attendance_management.R
-# attendance_management.R の出力が既存の期待値と一致するか検証します。
+# attendance_management.R の出力が期待値と一致するか検証します。
 # 使い方:
-#   1. output/test_202401 に期待値ファイルが存在することを確認してください。
+#   1. output/test_YYYYMM/ に期待値ファイルが存在することを確認してください。
+#      ※ YYYYMM は実行日の前月。テストデータ生成手順は README を参照してください。
 #   2. このスクリプトを Source してください。
 #   3. コンソールに PASS / FAIL が表示されます。
 # ------ libraries ------
 library(here)
 library(tidyverse)
+source(here("programs", "common.R"), encoding = "utf-8")
 # ------ settings ------
-# テスト対象の年月（期待値フォルダ名に合わせる）
-test_yyyymm <- "202605"
+# テスト対象の年月（実行日の前月を自動で使用する）
+test_yyyymm <- GetTargetYyyymm()
 # テストモードを有効にしてから attendance_management.R を実行する
 # （MoveFile がスキップされ、本番データが書き換えられるのを防ぐ）
-test_mode      <- TRUE
-target_yyyymm  <- test_yyyymm
-source(here("programs", "attendance_management.R"), encoding="utf-8")
-test_mode <- FALSE
+test_mode     <- TRUE
+target_yyyymm <- test_yyyymm
+source(here("programs", "attendance_management.R"), encoding = "utf-8")
+test_mode     <- FALSE
+rm(target_yyyymm)
 # 期待値フォルダ（git管理下の既存出力）
 expected_dir <- here("output", str_c("test_", test_yyyymm))
 # 生成結果フォルダ（attendance_management.R が出力したフォルダ）
